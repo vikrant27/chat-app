@@ -4,7 +4,7 @@ const express =require('express');
 const path =require('path');
 const socketIO = require('socket.io');
 
-const {generateMessage} = require('./utils/message');
+const {generateMessage,generateLocationMessage} = require('./utils/message');
 
 const port = process.env.PORT || 3000;
 
@@ -30,13 +30,12 @@ io.on('connection',(socket) => {
 	socket.on('createMessage',(message,callback)=>{
 		console.log('createMessage',message);
 		io.emit('newMessage',generateMessage(message.from,message.text));
-		// socket.broadcast.emit('newMessage',{
-		// 	from: message.from,
-		// 	text:message.text,
-		// 	createdAt: new Date().getTime()
-		// });
 		callback('This is form the server.');
 	});
+
+	socket.on('createLocationMessage',(coords)=>{
+		io.emit('newLocationMessage',generateLocationMessage('Admin', coords.latitude, coords.longitude))
+	})
 
 	socket.on('disconnect',()=>{
 		console.log('User was disconnected');
